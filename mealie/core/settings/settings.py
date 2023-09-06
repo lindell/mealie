@@ -127,6 +127,12 @@ class AppSettings(BaseSettings):
         return "" not in required and None not in required
 
     # ===============================================
+    # OpenAI Configuration
+
+    OPENAI_API_KEY: NoneStr = None
+    OPENAI_MODEL: str = "gpt-4-0613"
+
+    # ===============================================
     # LDAP Configuration
 
     LDAP_AUTH_ENABLED: bool = False

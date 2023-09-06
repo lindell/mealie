@@ -23,7 +23,7 @@ from mealie.schema.recipe.recipe_ingredient import (
 )
 from mealie.schema.response.pagination import PaginationQuery
 
-from . import brute, crfpp
+from . import brute, crfpp, openai
 
 logger = get_logger(__name__)
 T = TypeVar("T", bound=BaseModel)
@@ -211,9 +211,39 @@ class NLPParser(ABCIngredientParser):
         return items[0]
 
 
+class OpenAiParser(ABCIngredientParser):
+    """
+    Class for OpenAI ingredient parsers.
+    """
+
+    def __init__(self) -> None:
+        pass
+
+    def _convert_ingredient(self, parsed_ingredient: openai.OpenAiIngredient) -> ParsedIngredient:
+        return ParsedIngredient(
+            ingredient=RecipeIngredient(
+                food=CreateIngredientFood(name=parsed_ingredient.ingredient),
+                unit=CreateIngredientUnit(name=parsed_ingredient.unit),
+                quantity=parsed_ingredient.amount,
+                note=parsed_ingredient.note,
+                disable_amount=False,
+                original_text=parsed_ingredient.original_text,
+            ),
+        )
+
+    def parse(self, ingredients: list[str]) -> list[ParsedIngredient]:
+        parsed_ingredients = openai.parse_ingredients(ingredients)
+        return [self._convert_ingredient(parsed_ingredient) for parsed_ingredient in parsed_ingredients]
+
+    def parse_one(self, ingredient: str) -> ParsedIngredient:
+        items = self.parse([ingredient])
+        return items[0]
+
+
 __registrar = {
     RegisteredParser.nlp: NLPParser,
     RegisteredParser.brute: BruteForceParser,
+    RegisteredParser.openai: OpenAiParser,
 }
 
 

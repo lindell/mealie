@@ -26,6 +26,10 @@
             btn-class="mx-2 mb-4"
             :items="[
               {
+                text: 'Open AI',
+                value: 'openai',
+              },
+              {
                 text: 'Natural Language Processor ',
                 value: 'nlp',
               },

@@ -252,6 +252,7 @@ class ParsedIngredient(MealieModel):
 class RegisteredParser(str, enum.Enum):
     nlp = "nlp"
     brute = "brute"
+    openai = "openai"
 
 
 class IngredientsRequest(MealieModel):

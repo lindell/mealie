@@ -13,6 +13,7 @@
         <v-btn-toggle v-model="parser" dense mandatory @change="processIngredient">
           <v-btn value="nlp"> {{ $t('admin.nlp') }} </v-btn>
           <v-btn value="brute"> {{ $t('admin.brute') }} </v-btn>
+          <v-btn value="openai"> {{ $t('admin.openai') }} </v-btn>
         </v-btn-toggle>
 
         <v-checkbox v-model="showConfidence" class="ml-5" :label="$t('admin.show-individual-confidence')"></v-checkbox>
