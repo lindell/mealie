@@ -38,12 +38,19 @@
           solo
           return-object
           :items="units || []"
-          item-text="name"
+          :filter="unitFilter"
+          :value-comparator="unitCompare"
           class="mx-1"
           :placeholder="$t('recipe.choose-unit')"
           clearable
           @keyup.enter="handleUnitEnter"
         >
+          <template #item="data">
+            {{ data.item.name }}
+          </template>
+          <template #selection="data">
+            {{ data.item.name }}
+          </template>
           <template #no-data>
             <div class="caption text-center pb-2">{{ $t("recipe.press-enter-to-create") }}</div>
           </template>
@@ -122,7 +129,7 @@
 import { computed, defineComponent, reactive, ref, toRefs, useContext } from "@nuxtjs/composition-api";
 import { useFoodStore, useFoodData, useUnitStore, useUnitData } from "~/composables/store";
 import { validators } from "~/composables/use-validators";
-import { RecipeIngredient } from "~/lib/api/types/recipe";
+import { CreateIngredientUnit, RecipeIngredient } from "~/lib/api/types/recipe";
 
 export default defineComponent({
   props: {
@@ -259,6 +266,17 @@ export default defineComponent({
       }
     }
 
+    function unitFilter(unit : CreateIngredientUnit, queryText : string) {
+      return (unit.abbreviation && unit.abbreviation.includes(queryText)) || (unit.name.includes(queryText));
+    }
+
+    function unitCompare(listItem : CreateIngredientUnit, valueItem : CreateIngredientUnit) {
+      const name = valueItem?.name.toLowerCase();
+      if (name === "") return false;
+      const ret = name === listItem?.name.toLowerCase() || name === listItem?.abbreviation?.toLocaleLowerCase();
+      return ret;
+    }
+
     function quantityFilter(e: KeyboardEvent) {
       // if digit is pressed, add to quantity
       if (e.key === "-" || e.key === "+" || e.key === "e") {
@@ -273,6 +291,8 @@ export default defineComponent({
       contextMenuOptions,
       handleUnitEnter,
       handleFoodEnter,
+      unitFilter,
+      unitCompare,
       createAssignFood,
       createAssignUnit,
       foods: foodStore.foods,
