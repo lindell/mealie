@@ -221,6 +221,7 @@ class OpenAiParser(ABCIngredientParser):
 
     def _convert_ingredient(self, parsed_ingredient: openai.OpenAiIngredient) -> ParsedIngredient:
         return ParsedIngredient(
+            input=parsed_ingredient.original_text,
             ingredient=RecipeIngredient(
                 food=CreateIngredientFood(name=parsed_ingredient.ingredient),
                 unit=CreateIngredientUnit(name=parsed_ingredient.unit),

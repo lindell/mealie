@@ -16,7 +16,7 @@ class OpenAiIngredient(BaseModel):
 instruction = """Given this a list of ingredients. Create a new list that contains five parts:
 Ingredient: The type ingredient.
 Unit: The unit of measurement (might be empty).
-Amount: The amount of the unit of measurement. If no amount is provided, use 0.
+Amount: The amount of the unit of measurement. If no amount is provided, use 0. If the amount is a range between two numbers, take the mean.
 Note: Any extra information provided (might be empty).
 ID: The ID of the list item"""
 
@@ -67,12 +67,11 @@ def parse_ingredients(ingredients_list: list[str]) -> list[OpenAiIngredient]:
                 "role": "user",
                 "content": "Units should not be abbreviated. If a unit is abbreviated, convert it into its full form in the language of the list. Example: kg -> kilogram",
             },
-            {"role": "user", "content": "If the amount is a range between two numbers, take the mean."},
             {
-                "role": "user",
+                "role": "function",
+                "name": "set_ingredients",
                 "content": "Make both ingredients and unit into singular form in the language of the list.",
             },
-            {"role": "function", "name": "set_ingredients", "content": ""},
         ],
         functions=[{"name": "set_ingredients", "parameters": schema}],
         temperature=0.1,
