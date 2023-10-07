@@ -1,10 +1,12 @@
 import { ref, reactive, Ref } from "@nuxtjs/composition-api";
 import { usePublicStoreActions, useStoreActions } from "../partials/use-actions-factory";
 import { usePublicExploreApi } from "../api/api-client";
+import { MultiCache } from "../partials/cache";
 import { useUserApi } from "~/composables/api";
 import { IngredientFood } from "~/lib/api/types/recipe";
 
 let foodStore: Ref<IngredientFood[] | null> | null = null;
+const foodCache = new MultiCache<IngredientFood>("foods");
 
 /**
  * useFoodData returns a template reactive object
@@ -55,7 +57,7 @@ export const useFoodStore = function () {
   const loading = ref(false);
 
   const actions = {
-    ...useStoreActions(api.foods, foodStore, loading),
+    ...useStoreActions(api.foods, foodStore, loading, foodCache),
     flushStore() {
       foodStore = null;
     },

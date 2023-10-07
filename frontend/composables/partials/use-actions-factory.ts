@@ -1,5 +1,6 @@
 import { Ref, useAsync } from "@nuxtjs/composition-api";
 import { useAsyncKey } from "../use-utils";
+import { CacheInterface } from "./cache";
 import { BaseCRUDAPI, BaseCRUDAPIReadOnly } from "~/lib/api/base/base-clients";
 import { QueryValue } from "~/lib/api/base/route";
 
@@ -79,7 +80,8 @@ export function usePublicStoreActions<T extends BoundT>(
 export function useStoreActions<T extends BoundT>(
   api: BaseCRUDAPI<unknown, T, unknown>,
   allRef: Ref<T[] | null> | null,
-  loading: Ref<boolean>
+  loading: Ref<boolean>,
+  cache?: CacheInterface<T>,
 ): StoreActions<T> {
   function getAll(page = 1, perPage = -1, params = {} as Record<string, QueryValue>) {
     params.orderBy ??= "name";
@@ -94,11 +96,13 @@ export function useStoreActions<T extends BoundT>(
       }
 
       if (data) {
+        cache?.setMultiple(data.items);
         return data.items ?? [];
       } else {
         return [];
       }
     }, useAsyncKey());
+    cache?.fillAllRef(allItems);
 
     loading.value = false;
     return allItems;

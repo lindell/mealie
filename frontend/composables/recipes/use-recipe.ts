@@ -1,4 +1,5 @@
 import { ref, onMounted } from "@nuxtjs/composition-api";
+import { recipeCache } from "./recipe-cache";
 import { useUserApi } from "~/composables/api";
 import { Recipe } from "~/lib/api/types/recipe";
 
@@ -13,6 +14,7 @@ export const useRecipe = function (slug: string, eager = true) {
     const { data } = await api.recipes.getOne(slug);
     loading.value = false;
     if (data) {
+      recipeCache.set(data);
       recipe.value = data;
     }
   }
@@ -33,6 +35,7 @@ export const useRecipe = function (slug: string, eager = true) {
 
   onMounted(() => {
     if (eager) {
+      recipeCache.fillRef(recipe, slug);
       fetchRecipe();
     }
   });

@@ -2,7 +2,7 @@ FROM node:16 as builder
 
 WORKDIR /app
 
-COPY ./frontend .
+COPY ./frontend/package.json ./frontend/yarn.lock .
 
 RUN yarn install \
     --prefer-offline \
@@ -11,6 +11,8 @@ RUN yarn install \
     --production=false \
     # https://github.com/docker/build-push-action/issues/471
     --network-timeout 1000000
+
+COPY ./frontend .
 
 RUN yarn generate
 

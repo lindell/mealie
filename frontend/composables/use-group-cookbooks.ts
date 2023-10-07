@@ -1,10 +1,12 @@
 import { useAsync, ref, Ref, useContext } from "@nuxtjs/composition-api";
 import { useAsyncKey } from "./use-utils";
 import { usePublicExploreApi } from "./api/api-client";
+import { Cache } from "./partials/cache";
 import { useUserApi } from "~/composables/api";
 import { ReadCookBook, UpdateCookBook } from "~/lib/api/types/cookbook";
 
 let cookbookStore: Ref<ReadCookBook[] | null> | null = null;
+const cookbookCache = new Cache<ReadCookBook>("cookbooks", "slug");
 
 export const useCookbook = function (publicGroupSlug: string | null = null) {
   function getOne(id: string | number) {
@@ -78,11 +80,13 @@ export const useCookbooks = function () {
         const { data } = await api.cookbooks.getAll(1, -1, { orderBy: "position", orderDirection: "asc" });
 
         if (data) {
+          cookbookCache.setMultiple(data.items);
           return data.items;
         } else {
           return null;
         }
       }, useAsyncKey());
+      cookbookCache.fillAllRef(units);
 
       loading.value = false;
       return units;

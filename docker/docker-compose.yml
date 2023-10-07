@@ -14,6 +14,7 @@ services:
       - 9091:9000
     environment:
       ALLOW_SIGNUP: "false"
+      BASE_URL: https://recipes.example.com
 
       DB_ENGINE: sqlite # Optional: 'sqlite', 'postgres'
       # =====================================
@@ -39,6 +40,28 @@ services:
       # SMTP_FROM_EMAIL=
       # SMTP_USER=
       # SMTP_PASSWORD=
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mealie.rule=Host(`recipes.example.com`)"
+      - "traefik.http.routers.mealie.entrypoints=websecure,web"
+
+  traefik:
+    image: "traefik:v2.10"
+    container_name: "traefik"
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:8081"
+      - "--entrypoints.websecure.address=:443"
+      - "--serversTransport.insecureSkipVerify=true"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    ports:
+      - "8081:8081"
+      - "443:443"
+      - "8082:8080"
 
 volumes:
   mealie-data:

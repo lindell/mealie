@@ -22,7 +22,6 @@ export const useLazyRecipes = function (publicGroupSlug: string | null = null) {
     query: RecipeSearchQuery | null = null,
     queryFilter: string | null = null,
   ) {
-
     const { data } = await api.recipes.getAll(page, perPage, {
       orderBy,
       orderDirection,

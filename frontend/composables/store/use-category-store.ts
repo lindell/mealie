@@ -1,10 +1,12 @@
 import { reactive, ref, Ref } from "@nuxtjs/composition-api";
 import { usePublicStoreActions, useStoreActions } from "../partials/use-actions-factory";
 import { usePublicExploreApi } from "../api/api-client";
+import { MultiCache } from "../partials/cache";
 import { useUserApi } from "~/composables/api";
 import { RecipeCategory } from "~/lib/api/types/admin";
 
 const categoryStore: Ref<RecipeCategory[]> = ref([]);
+const categoryCache = new MultiCache<RecipeCategory>("categories");
 
 export function useCategoryData() {
   const data = reactive({
@@ -53,7 +55,7 @@ export function useCategoryStore() {
   const loading = ref(false);
 
   const actions = {
-    ...useStoreActions<RecipeCategory>(api.categories, categoryStore, loading),
+    ...useStoreActions<RecipeCategory>(api.categories, categoryStore, loading, categoryCache),
     flushStore() {
       categoryStore.value = [];
     },

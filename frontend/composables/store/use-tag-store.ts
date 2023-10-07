@@ -1,10 +1,12 @@
 import { reactive, ref, Ref } from "@nuxtjs/composition-api";
 import { usePublicStoreActions, useStoreActions } from "../partials/use-actions-factory";
 import { usePublicExploreApi } from "../api/api-client";
+import { MultiCache } from "../partials/cache";
 import { useUserApi } from "~/composables/api";
 import { RecipeTag } from "~/lib/api/types/admin";
 
 const items: Ref<RecipeTag[]> = ref([]);
+const tagCache = new MultiCache<RecipeTag>("tags");
 
 export function useTagData() {
   const data = reactive({
@@ -52,7 +54,7 @@ export function useTagStore() {
   const loading = ref(false);
 
   const actions = {
-    ...useStoreActions<RecipeTag>(api.tags, items, loading),
+    ...useStoreActions<RecipeTag>(api.tags, items, loading, tagCache),
     flushStore() {
       items.value = [];
     },

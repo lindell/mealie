@@ -1,10 +1,12 @@
 import { reactive, ref, Ref } from "@nuxtjs/composition-api";
 import { usePublicExploreApi } from "../api/api-client";
 import { usePublicStoreActions, useStoreActions } from "../partials/use-actions-factory";
+import { MultiCache } from "../partials/cache";
 import { useUserApi } from "~/composables/api";
 import { RecipeTool } from "~/lib/api/types/recipe";
 
 const toolStore: Ref<RecipeTool[]> = ref([]);
+const toolCache = new MultiCache<RecipeTool>("tools");
 
 export function useToolData() {
   const data = reactive({
@@ -54,7 +56,7 @@ export function useToolStore() {
   const loading = ref(false);
 
   const actions = {
-    ...useStoreActions<RecipeTool>(api.tools, toolStore, loading),
+    ...useStoreActions<RecipeTool>(api.tools, toolStore, loading, toolCache),
     flushStore() {
       toolStore.value = [];
     },

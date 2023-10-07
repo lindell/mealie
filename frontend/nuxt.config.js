@@ -1,3 +1,13 @@
+import { execSync } from 'child_process';
+
+let commits = 1;
+try {
+  const numberOfCommitsExec = execSync('git rev-list --count HEAD');
+  commits = parseInt(numberOfCommitsExec.toString().trim(), 10);
+} catch (e) {
+  console.error(`Could not get number of commits: ${e}`);
+}
+
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   target: "static",
@@ -46,7 +56,7 @@ export default {
   css: [{ src: "~/assets/css/main.css" }, { src: "~/assets/css/main.css" }, { src: "~/assets/style-overrides.scss" }],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: ["~/plugins/globals.ts", "~/plugins/theme.ts", "~/plugins/toast.client.ts", "~/plugins/dark-mode.client.ts"],
+  plugins: ["~/plugins/globals.ts", "~/plugins/theme.ts", "~/plugins/toast.client.ts", "~/plugins/dark-mode.client.ts", "~/plugins/cache.ts"],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
